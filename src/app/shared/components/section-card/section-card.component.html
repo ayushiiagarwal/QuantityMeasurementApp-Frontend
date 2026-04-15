@@ -1,0 +1,9 @@
+<section class="section-card" [class.compact]="compact">
+  <header class="section-card__header" *ngIf="title || subtitle">
+    <div>
+      <p class="section-card__eyebrow" *ngIf="title">{{ title }}</p>
+      <p class="section-card__subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+    </div>
+  </header>
+  <ng-content></ng-content>
+</section>

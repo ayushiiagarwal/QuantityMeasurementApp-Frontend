@@ -1,0 +1,4 @@
+<div class="toast" *ngIf="message" [class.toast--visible]="visible" [class.toast--error]="message.variant === 'error'" [class.toast--info]="message.variant === 'info'">
+  <span class="toast__icon">{{ message.variant === 'error' ? '!' : message.variant === 'info' ? 'i' : '✓' }}</span>
+  <span class="toast__text">{{ message.text }}</span>
+</div>
