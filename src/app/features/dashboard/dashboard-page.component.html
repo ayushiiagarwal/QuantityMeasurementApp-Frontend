@@ -1,0 +1,259 @@
+<main class="dashboard-shell">
+  <header class="dashboard-header">
+    <div class="brand-lockup">
+      <div class="brand-mark">⚖</div>
+      <div>
+        <p class="brand-name">Quantity Measurement App</p>
+        <p class="brand-sub">Perform conversions, comparisons, and arithmetic operations</p>
+      </div>
+    </div>
+
+    <div class="user-strip">
+      <button type="button" class="icon-btn theme-btn" (click)="toggleTheme()" [attr.aria-label]="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'">
+        <span class="theme-icon">{{ theme === 'dark' ? themeIcons.dark : themeIcons.light }}</span>
+      </button>
+      <div class="user-chip">
+        <span class="user-avatar">{{ avatarLetter }}</span>
+        <div>
+          <strong>{{ displayName }}</strong>
+          <p>{{ isGuest ? 'Guest mode' : (session.email || 'Signed in') }}</p>
+        </div>
+      </div>
+      <button type="button" class="outline-btn" (click)="signOut()">
+        {{ isGuest ? 'Exit' : 'Log out' }}
+      </button>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Measurement areas">
+    <button *ngFor="let panel of panels" type="button" class="tab-btn" [class.active]="activePanel === panel" (click)="openPanel(panel)">
+      {{ panel | titlecase }}
+    </button>
+  </nav>
+
+  <section class="panel-grid" *ngIf="activePanel === 'convert'">
+    <app-section-card title="Unit Converter" >
+      <div class="form-grid form-grid--stacked">
+        <label class="field">
+          <span>Category</span>
+          <select [formControl]="convertForm.controls.category">
+            <option *ngFor="let category of categoryKeys" [value]="category">
+              {{ categoryLabels[category] }}
+            </option>
+          </select>
+        </label>
+        <div class="measure-row measure-row--convert">
+          <label class="field">
+            <span>Value</span>
+            <input type="number" [formControl]="convertForm.controls.value" placeholder="Enter value">
+          </label>
+          <label class="field">
+            <span>From</span>
+            <select [formControl]="convertForm.controls.fromUnit">
+              <option *ngFor="let unit of unitOptions[convertForm.controls.category.value ?? 'length']" [value]="unit.code">
+                {{ unit.label }} ({{ unit.symbol }})
+              </option>
+            </select>
+          </label>
+          <label class="field">
+            <span>To</span>
+            <select [formControl]="convertForm.controls.toUnit">
+              <option *ngFor="let unit of unitOptions[convertForm.controls.category.value ?? 'length']" [value]="unit.code">
+                {{ unit.label }} ({{ unit.symbol }})
+              </option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <button type="button" class="action-btn" (click)="submitConvert()" [disabled]="submitting">Convert</button>
+
+      <div class="result-card" *ngIf="convertResult">
+        <p class="result-label">Result</p>
+        <h2>{{ convertResult.error ? 'Calculation error' : convertResult.result }}</h2>
+        <p>{{ convertResult.error || (convertResult.operand1 + ' → ' + convertResult.result) }}</p>
+      </div>
+    </app-section-card>
+  </section>
+
+  <section class="panel-grid" *ngIf="activePanel === 'compare'">
+    <app-section-card title="Quantity Comparator" >
+      <div class="form-grid form-grid--stacked">
+        <label class="field">
+          <span>Category</span>
+          <select [formControl]="compareForm.controls.category">
+            <option *ngFor="let category of categoryKeys" [value]="category">
+              {{ categoryLabels[category] }}
+            </option>
+          </select>
+        </label>
+        <div class="measure-row">
+          <label class="field">
+            <span>Left value</span>
+            <input type="number" [formControl]="compareForm.controls.leftValue" placeholder="100">
+          </label>
+          <label class="field">
+            <span>Left unit</span>
+            <select [formControl]="compareForm.controls.leftUnit">
+              <option *ngFor="let unit of unitOptions[compareForm.controls.category.value ?? 'length']" [value]="unit.code">
+                {{ unit.label }} ({{ unit.symbol }})
+              </option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Right value</span>
+            <input type="number" [formControl]="compareForm.controls.rightValue" placeholder="50">
+          </label>
+          <label class="field">
+            <span>Right unit</span>
+            <select [formControl]="compareForm.controls.rightUnit">
+              <option *ngFor="let unit of unitOptions[compareForm.controls.category.value ?? 'length']" [value]="unit.code">
+                {{ unit.label }} ({{ unit.symbol }})
+              </option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <button type="button" class="action-btn" (click)="submitCompare()" [disabled]="submitting">Compare</button>
+
+      <div class="compare-result" *ngIf="compareResult">
+        <div class="compare-bars">
+          <div class="bar">
+            <span>{{ compareForm.controls.leftValue.value }} {{ getUnitSymbol(compareForm.controls.category.value ?? 'length', compareForm.controls.leftUnit.value ?? '') }}</span>
+          </div>
+          <div class="bar">
+            <span>{{ compareForm.controls.rightValue.value }} {{ getUnitSymbol(compareForm.controls.category.value ?? 'length', compareForm.controls.rightUnit.value ?? '') }}</span>
+          </div>
+        </div>
+        <div class="verdict-chip" *ngIf="!compareResult.error; else compareError">
+          {{ verdictLabel }}
+        </div>
+        <ng-template #compareError>
+          <div class="verdict-chip" style="background: rgba(255, 107, 107, 0.12); color: var(--red);">Error</div>
+        </ng-template>
+        <p class="compare-copy" *ngIf="compareResult.error">{{ compareResult.error }}</p>
+      </div>
+    </app-section-card>
+  </section>
+
+  <section class="panel-grid" *ngIf="activePanel === 'arithmetic'">
+    <app-section-card title="Quantity Arithmetic" >
+      <div class="op-row">
+        <button
+          *ngFor="let op of arithmeticOps"
+          type="button"
+          class="op-btn"
+          [class.active]="arithmeticForm.controls.operation.value === op"
+          (click)="arithmeticForm.controls.operation.setValue(op)"
+        >
+          {{ operationLabels[op] }}
+        </button>
+      </div>
+
+      <div class="form-grid form-grid--stacked">
+        <label class="field">
+          <span>Category</span>
+          <select [formControl]="arithmeticForm.controls.category">
+            <option *ngFor="let category of categoryKeys" [value]="category">
+              {{ categoryLabels[category] }}
+            </option>
+          </select>
+        </label>
+        <div class="measure-row measure-row--three">
+          <label class="field">
+            <span>Value 1</span>
+            <input type="number" [formControl]="arithmeticForm.controls.leftValue" placeholder="10">
+          </label>
+          <label class="field">
+            <span>Unit 1</span>
+            <select [formControl]="arithmeticForm.controls.leftUnit">
+              <option *ngFor="let unit of unitOptions[arithmeticForm.controls.category.value ?? 'length']" [value]="unit.code">
+                {{ unit.label }} ({{ unit.symbol }})
+              </option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Value 2</span>
+            <input type="number" [formControl]="arithmeticForm.controls.rightValue" placeholder="5">
+          </label>
+          <label class="field">
+            <span>Unit 2</span>
+            <select [formControl]="arithmeticForm.controls.rightUnit">
+              <option *ngFor="let unit of unitOptions[arithmeticForm.controls.category.value ?? 'length']" [value]="unit.code">
+                {{ unit.label }} ({{ unit.symbol }})
+              </option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Result unit</span>
+            <select [formControl]="arithmeticForm.controls.resultUnit">
+              <option *ngFor="let unit of unitOptions[arithmeticForm.controls.category.value ?? 'length']" [value]="unit.code">
+                {{ unit.label }} ({{ unit.symbol }})
+              </option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <button type="button" class="action-btn" (click)="submitArithmetic()" [disabled]="submitting">Calculate</button>
+
+      <div class="result-card" *ngIf="arithmeticResult">
+        <p class="result-label">Result</p>
+        <h2>{{ arithmeticResult.error ? 'Calculation error' : arithmeticResult.result }}</h2>
+        <p>{{ arithmeticResult.error || (arithmeticResult.operand1 + ' ' + arithmeticResult.operation + ' ' + arithmeticResult.operand2 + ' = ' + arithmeticResult.result) }}</p>
+      </div>
+    </app-section-card>
+  </section>
+
+  <section class="panel-grid" *ngIf="activePanel === 'reference'">
+    <app-section-card title="Reference Tables" >
+      <div class="reference-grid">
+        <div class="reference-block">
+          <h3>Length</h3>
+          <p>1 FEET = 12 INCH</p>
+          <p>1 YARDS = 3 FEET</p>
+          <p>1 CENTIMETER = 0.03280839895 FEET</p>
+        </div>
+        <div class="reference-block">
+          <h3>Weight</h3>
+          <p>1 KILOGRAM = 1000 GRAM</p>
+          <p>1 POUND = 0.453592 KILOGRAM</p>
+        </div>
+        <div class="reference-block">
+          <h3>Volume</h3>
+          <p>1 LITRE = 1000 MILLILITRE</p>
+          <p>1 GALLON = 3.78541 LITRE</p>
+        </div>
+        <div class="reference-block">
+          <h3>Temperature</h3>
+          <p>°F = °C × 9/5 + 32</p>
+          <p>°C = (°F - 32) × 5/9</p>
+        </div>
+      </div>
+    </app-section-card>
+  </section>
+
+  <section class="panel-grid" *ngIf="activePanel === 'history'">
+    <app-section-card title="Operation History" >
+      <div class="history-toolbar">
+        <p>{{ loadingHistory ? 'Loading history...' : (isGuest ? 'Sign in to save history.' : 'Stored for your authenticated account.') }}</p>
+        <button type="button" class="ghost-btn" (click)="clearHistory()">Clear History</button>
+      </div>
+
+      <ul class="history-list" *ngIf="!isGuest && currentHistory.length; else emptyHistory">
+        <li class="history-item" *ngFor="let record of currentHistory">
+          <div>
+            <strong>{{ formatRecord(record) }}</strong>
+            <span>{{ formatTime(record) }}</span>
+          </div>
+          <span class="history-status" [class.history-status--error]="!!record.error">{{ record.error ? 'Error' : 'Done' }}</span>
+        </li>
+      </ul>
+
+      <ng-template #emptyHistory>
+        <p class="empty-state">{{ isGuest ? 'Guest mode does not store history. Sign in to keep your operations.' : 'No operations yet. Run a conversion, comparison, or calculation to populate history.' }}</p>
+      </ng-template>
+    </app-section-card>
+  </section>
+</main>

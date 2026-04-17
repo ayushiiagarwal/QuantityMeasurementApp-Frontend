@@ -1,0 +1,68 @@
+<main class="auth-shell">
+  <div class="orb orb--one"></div>
+  <div class="orb orb--two"></div>
+  <div class="orb orb--three"></div>
+
+  <section class="auth-card">
+    <div class="auth-brand">
+      <div class="auth-brand__icon">⚖</div>
+      <p class="auth-brand__name">Quantity</p>
+      <p class="auth-brand__sub">Measurement App</p>
+    </div>
+
+    <div class="auth-tabs" role="tablist">
+      <button type="button" class="auth-tab" [class.active]="activeTab === 'login'" (click)="switchTab('login')">Sign In</button>
+      <button type="button" class="auth-tab" [class.active]="activeTab === 'signup'" (click)="switchTab('signup')">Create Account</button>
+    </div>
+
+    <div class="auth-panel" *ngIf="activeTab === 'login'">
+      <p class="auth-error" *ngIf="loginError">{{ loginError }}</p>
+      <button type="button" class="google-btn" (click)="signInWithGoogle()">
+        <span class="google-btn__mark">G</span>
+        Continue with Google
+      </button>
+      <div class="divider"><span>or sign in with email</span></div>
+
+      <label class="field">
+        <span>Email</span>
+        <input type="email" [formControl]="loginForm.controls.email" placeholder="you@example.com">
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" [formControl]="loginForm.controls.password" placeholder="Your password">
+      </label>
+
+      <button type="button" class="primary-btn" (click)="login()" [disabled]="submitting">
+        {{ submitting ? 'Signing in...' : 'Sign In' }}
+      </button>
+
+      <button type="button" class="ghost-btn" (click)="continueAsGuest()">Continue as Guest</button>
+    </div>
+
+    <div class="auth-panel" *ngIf="activeTab === 'signup'">
+      <p class="auth-error" *ngIf="signupError">{{ signupError }}</p>
+      <button type="button" class="google-btn" (click)="signInWithGoogle()">
+        <span class="google-btn__mark">G</span>
+        Sign up with Google
+      </button>
+      <div class="divider"><span>or sign up with email</span></div>
+
+      <label class="field">
+        <span>Full Name</span>
+        <input type="text" [formControl]="signupForm.controls.name" placeholder="Your name">
+      </label>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" [formControl]="signupForm.controls.email" placeholder="you@example.com">
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" [formControl]="signupForm.controls.password" placeholder="At least 6 characters">
+      </label>
+
+      <button type="button" class="primary-btn" (click)="signup()" [disabled]="submitting">
+        {{ submitting ? 'Creating...' : 'Create Account' }}
+      </button>
+    </div>
+  </section>
+</main>
