@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://qma-microservices.up.railway.app'
+  apiBaseUrl: 'http://localhost:8080'
 };

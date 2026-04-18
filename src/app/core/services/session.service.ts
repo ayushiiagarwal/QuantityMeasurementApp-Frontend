@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { SessionState } from '../models/measurement.models';
 
 const SESSION_KEY = 'qma_session';
@@ -56,7 +57,7 @@ export class SessionService {
   }
 
   get googleLoginUrl(): string {
-    return 'http://localhost:8080/oauth2/authorization/google';
+    return `${environment.apiBaseUrl}/oauth2/authorization/google`;
   }
 
   storeAuthenticatedSession(session: Pick<SessionState, 'token' | 'email' | 'name' | 'picture'>): void {

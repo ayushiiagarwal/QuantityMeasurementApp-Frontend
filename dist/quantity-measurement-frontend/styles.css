@@ -1,0 +1,115 @@
+/*!**********************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].rules[0].oneOf[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[5].rules[0].oneOf[0].use[2]!./src/styles.css?ngGlobalStyle ***!
+  \**********************************************************************************************************************************************************************************************************************/
+:root {
+  --bg: #0d0f18;
+  --surface: #141824;
+  --card: #1a2030;
+  --border: #2d3447;
+  --border-hi: rgba(76, 203, 255, 0.18);
+  --cyan: #4ccfff;
+  --red: #ff7a84;
+  --green: #b2ffbe;
+  --orange: #ffbc5f;
+  --purple: #c39bff;
+  --text: #edf1fb;
+  --muted: #8a93ab;
+  --glow: rgba(76, 207, 255, 0.14);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'DM Mono', monospace;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top right, rgba(76, 207, 255, 0.10), transparent 25%),
+    radial-gradient(circle at bottom left, rgba(195, 155, 255, 0.08), transparent 20%),
+    linear-gradient(180deg, #171c2a 0%, #0d0f18 100%);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.light-theme {
+  --bg: #f6f8ff;
+  --surface: #ffffff;
+  --card: #fcfdff;
+  --border: #d8e0ee;
+  --border-hi: rgba(120, 145, 255, 0.22);
+  --text: #243048;
+  --muted: #66748b;
+  --glow: rgba(120, 145, 255, 0.14);
+  --cyan: #4aa8ff;
+  --red: #e87080;
+  --green: #74b88f;
+  --orange: #dda25f;
+  --purple: #9a86e8;
+  background:
+    radial-gradient(circle at top right, rgba(122, 176, 255, 0.16), transparent 26%),
+    radial-gradient(circle at bottom left, rgba(188, 163, 255, 0.12), transparent 24%),
+    linear-gradient(180deg, #f6f8ff 0%, #ebf1fb 100%);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(76, 207, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.55;
+}
+
+body.light-theme::before {
+  background-image: radial-gradient(rgba(122, 176, 255, 0.06) 1px, transparent 1px);
+  opacity: 0.55;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+.hidden {
+  display: none !important;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+
+/*# sourceMappingURL=styles.css.map*/
