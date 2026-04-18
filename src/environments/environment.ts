@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://qma-apigateway.up.railway.app'
+  apiBaseUrl: 'https://qma-microservices.up.railway.app'
 };
